@@ -1,17 +1,51 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { createRoot } from 'react-dom/client';
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+  Route
+} from "react-router-dom";
+//  COMPONENTS
+import Home from './components/Home';
+import Users from './components/Users';
+import DisplaySingleUser from './components/DisplaySingleUser';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />
+  },
+  {
+    path: "users",
+    element: <Users />,
+    loader: async () => {
+      return fetch("https://jsonplaceholder.typicode.com/users")
+    }
+  },
+  {
+    path: "users/:id",
+    element: <DisplaySingleUser />,
+    loader: async ({ params }) => {
+      return fetch(`https://jsonplaceholder.typicode.com/users/${params.id}`)
+    }
+  },
+]);
+
+/*//! FROM ELEMENTS 
+export const createRoutes = () =>
+  createRoutesFromElements(
+    <>
+      <Route path="/" element={<Home />} />
+      <Route path="users" element={<Users />} />
+      <Route path="users/:id" element={<DisplaySingleUser />} />
+    </>
+  );
+
+const createRouter = () => createBrowserRouter(createRoutes());
+const router = createRouter(); */
+
+createRoot(document.getElementById('root')).render(
+  <RouterProvider router={router} />
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
