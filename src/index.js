@@ -21,14 +21,24 @@ const router = createBrowserRouter([
     path: "users",
     element: <Users />,
     loader: async () => {
-      return fetch("https://jsonplaceholder.typicode.com/users")
+      const response = await fetch("https://jsonplaceholder.typicode.com/users");
+      if (response.status !== 200) {
+        return { error: response.statusText }
+      } else {
+        return await response.json();
+      }
     }
   },
   {
     path: "users/:id",
     element: <DisplaySingleUser />,
     loader: async ({ params }) => {
-      return fetch(`https://jsonplaceholder.typicode.com/users/${params.id}`)
+      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${params.id}`);
+      if (response.status !== 200) {
+        return { error: response.statusText }
+      } else {
+        return await response.json();
+      }
     }
   },
 ]);

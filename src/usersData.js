@@ -10,5 +10,5 @@ export const usersData = [
 	{
 		id: 3,
 		name: 'Anna'
-	},
+	}
 ]

@@ -1,6 +1,9 @@
 import React from 'react';
 import { useParams, useNavigate, Link, useLoaderData } from 'react-router-dom';
 import { usersData } from '../../usersData';
+//	COMPONENTS
+import ErrorScreen from '../ErrorScreen';
+
 
 export default function UserDisplay() {
 	const navigate = useNavigate();
@@ -8,6 +11,9 @@ export default function UserDisplay() {
 	// const { id } = useParams();
 	// const user = usersData[id - 1];
 
+	if (user.error) {
+		return <ErrorScreen error={user.error} />
+	}
 
 	return (
 		<div>
