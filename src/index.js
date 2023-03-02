@@ -4,12 +4,25 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
   RouterProvider,
-  Route
+  Route,
+  useRouteError
 } from "react-router-dom";
 //  COMPONENTS
 import Home from './components/Home';
 import Users from './components/Users';
 import DisplaySingleUser from './components/DisplaySingleUser';
+import RouteMissing from './components/RouteMissing';
+//  HELPERFUNCTIONS
+import { getUsers } from './helpers/users';
+
+
+//  Could be used for vague error handling like "Something went wrong"
+function NothingReturnedFromLoader() {
+  let error = useRouteError();
+  console.error(error);
+  // Uncaught ReferenceError: path is not defined
+  return <div>Dang!</div>;
+}
 
 
 const router = createBrowserRouter([
@@ -20,41 +33,46 @@ const router = createBrowserRouter([
   {
     path: "users",
     element: <Users />,
-    loader: async () => {
-      const response = await fetch("https://jsonplaceholder.typicode.com/users");
-      if (response.status !== 200) {
-        return { error: response.statusText }
-      } else {
-        return await response.json();
-      }
-    }
+    loader: getUsers,
+    errorElement: <NothingReturnedFromLoader /> //doesńt have access to the response error
   },
   {
     path: "users/:id",
     element: <DisplaySingleUser />,
-    loader: async ({ params }) => {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/users/${params.id}`);
-      if (response.status !== 200) {
-        return { error: response.statusText }
-      } else {
-        return await response.json();
-      }
-    }
+    loader: ({ params }) => getUsers(params)
+  },
+  {
+    path: "*",
+    element: <RouteMissing />
   },
 ]);
 
-/*//! FROM ELEMENTS 
-export const createRoutes = () =>
+
+//! FROM ELEMENTS 
+/* export const createRoutes = () =>
   createRoutesFromElements(
     <>
-      <Route path="/" element={<Home />} />
-      <Route path="users" element={<Users />} />
-      <Route path="users/:id" element={<DisplaySingleUser />} />
+      <Route
+        path="/"
+        element={<Home />}
+      />
+      <Route
+        path="users"
+        element={<Users />}
+        loader={getUsers}
+        // errorElement={<NothingReturnedFromLoader />} //doesńt have access to the response error
+      />
+      <Route
+        path="users/:id"
+        element={<DisplaySingleUser />}
+        loader={({ params }) => getUsers(params)}
+      />
     </>
   );
 
 const createRouter = () => createBrowserRouter(createRoutes());
 const router = createRouter(); */
+
 
 createRoot(document.getElementById('root')).render(
   <RouterProvider router={router} />
